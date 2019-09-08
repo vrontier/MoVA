@@ -1,5 +1,5 @@
 import 'mova/library'
-import {Building, Connector} from "./mova/library"
+import {Building} from "./mova/library"
 
 let moduleDimension: Vector3 = new Vector3(24, 8, 0.1)
 let openingDimension: Vector3 = new Vector3(4, 4, 0.1)
