@@ -76,12 +76,12 @@ export class Building extends Entity {
                         module.addComponent(new Transform({position: position}))
                         module.setParent(this)
 
-                        if (moduleId >= 1) {
-                            let connector: Connector = new Connector(connectorDimension, defaultWithCollisions)
-                            let connectorPosition: Vector3 = (new Vector3(moduleDimension.x, 0, moduleDimension.x/2 - connectorDimension.x/2 - connectorDimension.z)).add(position)
-                            connector.addComponent(new Transform({position: connectorPosition}))
-                            connector.setParent(this)
-                        }
+                        // if (moduleId >= 1) {
+                        //     let connector: Connector = new Connector(connectorDimension, defaultWithCollisions)
+                        //     let connectorPosition: Vector3 = (new Vector3(moduleDimension.x, 0, moduleDimension.x/2 - connectorDimension.x/2 - connectorDimension.z)).add(position)
+                        //     connector.addComponent(new Transform({position: connectorPosition}))
+                        //     connector.setParent(this)
+                        // }
                     }
                 }
             }
