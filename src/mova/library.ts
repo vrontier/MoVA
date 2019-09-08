@@ -75,6 +75,13 @@ export class Building extends Entity {
                         let module: Module = new Module()
                         module.addComponent(new Transform({position: position}))
                         module.setParent(this)
+
+                        if (moduleId >= 1) {
+                            let connector: Connector = new Connector(connectorDimension, defaultWithCollisions)
+                            let connectorPosition: Vector3 = (new Vector3(moduleDimension.x, 0, moduleDimension.x/2 - connectorDimension.x/2 - connectorDimension.z)).add(position)
+                            connector.addComponent(new Transform({position: connectorPosition}))
+                            connector.setParent(this)
+                        }
                     }
                 }
             }
@@ -313,6 +320,45 @@ export class Wall extends Entity {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+// MoVA Connector entity
+//
+export class Connector extends Entity {
+
+    constructor(dimension: Vector3, withCollisions: boolean = true) {
+
+        // Instantiate an Entity
+        super()
+
+        // Default shape
+        let wallShape: BoxShape = new BoxShape()
+        wallShape.withCollisions = withCollisions
+
+        let wall_S: Wall = new Wall(dimension, new Vector3(0,0,0), withCollisions)
+        wall_S.addComponent(new Transform({
+            position: new Vector3(0, 0, 0)
+        }))
+        wall_S.setParent(this)
+
+        let floor: Floor = new Floor(new Vector3(dimension.x, dimension.z, dimension.x), withCollisions)
+        floor.addComponent(new Transform({
+            position: new Vector3(dimension.x/2, 0, dimension.x/2)
+        }))
+        floor.setParent(this)
+
+        let wall_N: Wall = new Wall(dimension, new Vector3(0,0,0), withCollisions)
+        wall_N.addComponent(new Transform({
+            position: new Vector3(dimension.x, 0, dimension.x),
+            rotation: Quaternion.Euler(0, 180, 0)
+        }))
+        wall_N.setParent(this)
+
+        if (logging) log(msgDEBUG + 'Connector created')
+
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 // MoVA Floor Entity
 //
 export class Floor extends Entity {
@@ -393,185 +439,185 @@ export class Ceiling extends Entity {
     }
 }
 
-
-export function createWall(testMode:Boolean = false, position: Vector3, dimension: Vector3, rotation:Vector3, wallMaterial: Material) {
-    let wall:Entity = new Entity()
-    let wallShape:BoxShape = new BoxShape()
-    if (testMode) {
-        wallShape.withCollisions = false
-    } else {
-        wallShape.withCollisions = true
-    }
-    wall.addComponent(wallShape)
-    wall.addComponent(wallMaterial)
-
-    wall.addComponent(
-        new Transform({
-            position: position,
-            scale: dimension,
-            rotation: Quaternion.Euler(rotation.x, rotation.y, rotation.z)
-        })
-    )
-    engine.addEntity(wall)
-
-    const myEntity = new Entity()
-    const myText = new TextShape(
-        "Position: x=" + position.x + ", y=" + position.y+ ", z=" + position.z + "\n" +
-        "Size: x=" + dimension.x + ", y=" + dimension.y+ ", z=" + dimension.z)
-    myEntity.addComponent(myText)
-    myEntity.addComponent(new Transform({
-        position: new Vector3(position.x-0.2, 1.2, position.z-0.2),
-        scale: new Vector3(5, 5, 5),
-        rotation: Quaternion.Euler(rotation.x, rotation.y, rotation.z)
-    }))
-    myText.fontSize = 3
-    myText.hTextAlign = "left"
-    myText.color = Color3.Red()
-    engine.addEntity(myEntity)
-}
-
-
-export function createMoVAModule(testMode, position: Vector3, rotation:Vector3, wallMaterial:Material, innerWallMaterial:Material) {
-
-    let innerWallDim:Vector2 = new Vector2(24, 8)
-    let wallWidth:number = 0.1
-    let floorWidth:number = 0.1
-    let ceilingWidth:number = 0.1
-    let innerWallOffset:number = .01
-
-    let calculatedPosition:Vector3 = new Vector3(
-        position.x + innerWallDim.x/2 - wallWidth*1,
-        position.y + innerWallDim.y/2 + floorWidth*1,
-        position.z - wallWidth/2
-    )
-    let calculatedSize:Vector3 = new Vector3(innerWallDim.x + wallWidth * 2, innerWallDim.y + floorWidth + ceilingWidth, wallWidth )
-    createWall(testMode, calculatedPosition, calculatedSize, rotation, wallMaterial)
-
-    let innerWall:Entity = new Entity()
-    const innerWallShape = new PlaneShape()
-    if (testMode) {
-        innerWallShape.withCollisions = false
-    } else {
-        innerWallShape.withCollisions = true
-    }
-    innerWall.addComponent(innerWallShape)
-    innerWall.addComponent(innerWallMaterial)
-    innerWall.addComponent(
-        new Transform({
-            position: new Vector3(calculatedPosition.x, calculatedPosition.y, calculatedPosition.z + wallWidth/2 + innerWallOffset),
-            scale: new Vector3(innerWallDim.x, innerWallDim.y, 1),
-            rotation: Quaternion.Euler(rotation.x, rotation.y, rotation.z)
-        })
-    )
-    engine.addEntity(innerWall)
-
-    calculatedPosition = new Vector3(
-        position.x + innerWallDim.x/2 - wallWidth*1,
-        position.y + floorWidth*1/2,
-        position.z + innerWallDim.x/2
-    )
-    createWall(testMode, calculatedPosition, new Vector3(24,0.1, 24), rotation, wallMaterial)
-
-    calculatedPosition = new Vector3(
-        position.x + innerWallDim.x/2 - wallWidth*1,
-        position.y + innerWallDim.y + ceilingWidth + floorWidth/2,
-        position.z + innerWallDim.x/2
-    )
-    createWall(testMode, calculatedPosition, new Vector3(24,0.1, 24), rotation, wallMaterial)
-
-
-    // coordX = position.x - wallWidth/2
-    // coordY = position.y + innerWallDim.y/2
-    // coordZ = position.z + innerWallDim.x/2
-    //
-    // let myWall_2:Entity = createWall(testMode, new Vector3(coordX,coordY,coordZ), new Vector3(0.1, 8, 24 + 2*(wallWidth)), rotation, wallMaterial)
-    // engine.addEntity(myWall_2)
-    //
-    // coordX = position.x + innerWallDim.x/2
-    // coordY = position.y + innerWallDim.y/2
-    // coordZ = position.z + wallWidth/2 + innerWallDim.x
-    //
-    // let myWall_3:Entity = createWall(testMode, new Vector3(coordX,coordY,coordZ), innerWallDim, rotation, wallMaterial)
-    // engine.addEntity(myWall_3)
-    //
-    // coordX = position.x + innerWallDim.x
-    // coordY = position.y + innerWallDim.y/2
-    // coordZ = position.z + innerWallDim.x/2
-    //
-    // let myWall_4:Entity = createWall(testMode, new Vector3(coordX,coordY,coordZ), new Vector3(0.1, 8, 24 + 2*(wallWidth)), rotation, wallMaterial)
-    // engine.addEntity(myWall_4)
-}
-
-export function createMuseum(testMode:Boolean = false, moduleLayout:number[][][], position: Vector3, dimension: Vector3, moduleOffset:Vector3) {
-    let moduleLength: number = dimension.x
-    let moduleWidth: number = dimension.z
-    let moduleHeight: number = dimension.y
-
-    let module : any[] = []
-    let m: number = 0
-    let x: number = 0
-    let y: number = 0
-    let z: number = 0
-
-    const wallMaterial = new Material()
-    wallMaterial.albedoColor = Color3.Black()
-    wallMaterial.metallic = 0.2
-    wallMaterial.roughness = 0.2
-    wallMaterial.disableLighting = true
-
-    const innerWallMaterial = new Material()
-    innerWallMaterial.albedoColor = Color3.White()
-    innerWallMaterial.metallic = 0.1
-    innerWallMaterial.roughness = 0.1
-    innerWallMaterial.disableLighting = true
-
-    for (let level in moduleLayout) {
-        for (let positionX in moduleLayout[level]) {
-            for (let positionZ in moduleLayout[level][positionX]) {
-                let modulePresent:number = moduleLayout[level][positionX][positionZ]
-                x = Number(positionX)
-                y = Number(level)
-                z = Number(positionZ)
-                if (modulePresent == 1) {
-                    log('The Stack: level', level, 'of', moduleLayout.length, '- x:',
-                        positionX, '- z:', positionZ, '-> module present')
-                    x = (moduleLength + moduleOffset.x) * x
-                    y = (moduleHeight + moduleOffset.y) * y
-                    z = (moduleWidth + moduleOffset.z) * z
-                    let offset_position: Vector3 = position.add(new Vector3(x, y, z))
-                    //
-                    // module[m] = createModule(offset_position, dimension, wallMaterial)
-                    // engine.addEntity(module[m])
-
-                    module[m] = createMoVAModule(testMode, offset_position, new Vector3(0,0,0), wallMaterial, innerWallMaterial)
-                    //engine.addEntity(module[m])
-
-                } else {
-                    log('The Stack: level', level, 'of', moduleLayout.length, '- x:',
-                        positionX, '- z:', positionZ, '-> empty space')
-                }
-            }
-        }
-    }
-}
-
-export function randomScaping(landscape:number[][], startFromPosition:Vector3, density:number, offSetX:number[], offSetZ:number[]){
-    let scapedLand:Vector3[] = []
-    let mapX:number = 0
-    for (let x in landscape) {
-        let mapZ:number = 0
-        for (let z in landscape[x]) {
-            let offSetXValue = Math.random() * (offSetX[1] - offSetX[0]) + offSetX[0]
-            let offSetZValue = Math.random() * (offSetZ[1] - offSetZ[0]) + offSetZ[0]
-            let elementPosition:Vector3 = startFromPosition.add(new Vector3(mapX * density + offSetXValue, 0, mapZ * density + offSetZValue))
-            if (landscape[x][z] == 1) {
-                scapedLand.push(elementPosition)
-            }
-            mapZ += 1
-        }
-        mapX += 1
-    }
-    return scapedLand
-}
-
-
+//
+// export function createWall(testMode:Boolean = false, position: Vector3, dimension: Vector3, rotation:Vector3, wallMaterial: Material) {
+//     let wall:Entity = new Entity()
+//     let wallShape:BoxShape = new BoxShape()
+//     if (testMode) {
+//         wallShape.withCollisions = false
+//     } else {
+//         wallShape.withCollisions = true
+//     }
+//     wall.addComponent(wallShape)
+//     wall.addComponent(wallMaterial)
+//
+//     wall.addComponent(
+//         new Transform({
+//             position: position,
+//             scale: dimension,
+//             rotation: Quaternion.Euler(rotation.x, rotation.y, rotation.z)
+//         })
+//     )
+//     engine.addEntity(wall)
+//
+//     const myEntity = new Entity()
+//     const myText = new TextShape(
+//         "Position: x=" + position.x + ", y=" + position.y+ ", z=" + position.z + "\n" +
+//         "Size: x=" + dimension.x + ", y=" + dimension.y+ ", z=" + dimension.z)
+//     myEntity.addComponent(myText)
+//     myEntity.addComponent(new Transform({
+//         position: new Vector3(position.x-0.2, 1.2, position.z-0.2),
+//         scale: new Vector3(5, 5, 5),
+//         rotation: Quaternion.Euler(rotation.x, rotation.y, rotation.z)
+//     }))
+//     myText.fontSize = 3
+//     myText.hTextAlign = "left"
+//     myText.color = Color3.Red()
+//     engine.addEntity(myEntity)
+// }
+//
+//
+// export function createMoVAModule(testMode, position: Vector3, rotation:Vector3, wallMaterial:Material, innerWallMaterial:Material) {
+//
+//     let innerWallDim:Vector2 = new Vector2(24, 8)
+//     let wallWidth:number = 0.1
+//     let floorWidth:number = 0.1
+//     let ceilingWidth:number = 0.1
+//     let innerWallOffset:number = .01
+//
+//     let calculatedPosition:Vector3 = new Vector3(
+//         position.x + innerWallDim.x/2 - wallWidth*1,
+//         position.y + innerWallDim.y/2 + floorWidth*1,
+//         position.z - wallWidth/2
+//     )
+//     let calculatedSize:Vector3 = new Vector3(innerWallDim.x + wallWidth * 2, innerWallDim.y + floorWidth + ceilingWidth, wallWidth )
+//     createWall(testMode, calculatedPosition, calculatedSize, rotation, wallMaterial)
+//
+//     let innerWall:Entity = new Entity()
+//     const innerWallShape = new PlaneShape()
+//     if (testMode) {
+//         innerWallShape.withCollisions = false
+//     } else {
+//         innerWallShape.withCollisions = true
+//     }
+//     innerWall.addComponent(innerWallShape)
+//     innerWall.addComponent(innerWallMaterial)
+//     innerWall.addComponent(
+//         new Transform({
+//             position: new Vector3(calculatedPosition.x, calculatedPosition.y, calculatedPosition.z + wallWidth/2 + innerWallOffset),
+//             scale: new Vector3(innerWallDim.x, innerWallDim.y, 1),
+//             rotation: Quaternion.Euler(rotation.x, rotation.y, rotation.z)
+//         })
+//     )
+//     engine.addEntity(innerWall)
+//
+//     calculatedPosition = new Vector3(
+//         position.x + innerWallDim.x/2 - wallWidth*1,
+//         position.y + floorWidth*1/2,
+//         position.z + innerWallDim.x/2
+//     )
+//     createWall(testMode, calculatedPosition, new Vector3(24,0.1, 24), rotation, wallMaterial)
+//
+//     calculatedPosition = new Vector3(
+//         position.x + innerWallDim.x/2 - wallWidth*1,
+//         position.y + innerWallDim.y + ceilingWidth + floorWidth/2,
+//         position.z + innerWallDim.x/2
+//     )
+//     createWall(testMode, calculatedPosition, new Vector3(24,0.1, 24), rotation, wallMaterial)
+//
+//
+//     // coordX = position.x - wallWidth/2
+//     // coordY = position.y + innerWallDim.y/2
+//     // coordZ = position.z + innerWallDim.x/2
+//     //
+//     // let myWall_2:Entity = createWall(testMode, new Vector3(coordX,coordY,coordZ), new Vector3(0.1, 8, 24 + 2*(wallWidth)), rotation, wallMaterial)
+//     // engine.addEntity(myWall_2)
+//     //
+//     // coordX = position.x + innerWallDim.x/2
+//     // coordY = position.y + innerWallDim.y/2
+//     // coordZ = position.z + wallWidth/2 + innerWallDim.x
+//     //
+//     // let myWall_3:Entity = createWall(testMode, new Vector3(coordX,coordY,coordZ), innerWallDim, rotation, wallMaterial)
+//     // engine.addEntity(myWall_3)
+//     //
+//     // coordX = position.x + innerWallDim.x
+//     // coordY = position.y + innerWallDim.y/2
+//     // coordZ = position.z + innerWallDim.x/2
+//     //
+//     // let myWall_4:Entity = createWall(testMode, new Vector3(coordX,coordY,coordZ), new Vector3(0.1, 8, 24 + 2*(wallWidth)), rotation, wallMaterial)
+//     // engine.addEntity(myWall_4)
+// }
+//
+// export function createMuseum(testMode:Boolean = false, moduleLayout:number[][][], position: Vector3, dimension: Vector3, moduleOffset:Vector3) {
+//     let moduleLength: number = dimension.x
+//     let moduleWidth: number = dimension.z
+//     let moduleHeight: number = dimension.y
+//
+//     let module : any[] = []
+//     let m: number = 0
+//     let x: number = 0
+//     let y: number = 0
+//     let z: number = 0
+//
+//     const wallMaterial = new Material()
+//     wallMaterial.albedoColor = Color3.Black()
+//     wallMaterial.metallic = 0.2
+//     wallMaterial.roughness = 0.2
+//     wallMaterial.disableLighting = true
+//
+//     const innerWallMaterial = new Material()
+//     innerWallMaterial.albedoColor = Color3.White()
+//     innerWallMaterial.metallic = 0.1
+//     innerWallMaterial.roughness = 0.1
+//     innerWallMaterial.disableLighting = true
+//
+//     for (let level in moduleLayout) {
+//         for (let positionX in moduleLayout[level]) {
+//             for (let positionZ in moduleLayout[level][positionX]) {
+//                 let modulePresent:number = moduleLayout[level][positionX][positionZ]
+//                 x = Number(positionX)
+//                 y = Number(level)
+//                 z = Number(positionZ)
+//                 if (modulePresent == 1) {
+//                     log('The Stack: level', level, 'of', moduleLayout.length, '- x:',
+//                         positionX, '- z:', positionZ, '-> module present')
+//                     x = (moduleLength + moduleOffset.x) * x
+//                     y = (moduleHeight + moduleOffset.y) * y
+//                     z = (moduleWidth + moduleOffset.z) * z
+//                     let offset_position: Vector3 = position.add(new Vector3(x, y, z))
+//                     //
+//                     // module[m] = createModule(offset_position, dimension, wallMaterial)
+//                     // engine.addEntity(module[m])
+//
+//                     module[m] = createMoVAModule(testMode, offset_position, new Vector3(0,0,0), wallMaterial, innerWallMaterial)
+//                     //engine.addEntity(module[m])
+//
+//                 } else {
+//                     log('The Stack: level', level, 'of', moduleLayout.length, '- x:',
+//                         positionX, '- z:', positionZ, '-> empty space')
+//                 }
+//             }
+//         }
+//     }
+// }
+//
+// export function randomScaping(landscape:number[][], startFromPosition:Vector3, density:number, offSetX:number[], offSetZ:number[]){
+//     let scapedLand:Vector3[] = []
+//     let mapX:number = 0
+//     for (let x in landscape) {
+//         let mapZ:number = 0
+//         for (let z in landscape[x]) {
+//             let offSetXValue = Math.random() * (offSetX[1] - offSetX[0]) + offSetX[0]
+//             let offSetZValue = Math.random() * (offSetZ[1] - offSetZ[0]) + offSetZ[0]
+//             let elementPosition:Vector3 = startFromPosition.add(new Vector3(mapX * density + offSetXValue, 0, mapZ * density + offSetZValue))
+//             if (landscape[x][z] == 1) {
+//                 scapedLand.push(elementPosition)
+//             }
+//             mapZ += 1
+//         }
+//         mapX += 1
+//     }
+//     return scapedLand
+// }
+//
+//
