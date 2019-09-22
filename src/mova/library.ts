@@ -50,7 +50,7 @@ export class Building extends Entity {
         super()
 
         // Module type and count
-        let moduleId: number = 0
+        let moduleId: string = ''
         this._moduleCount = 0
         let moduleLevelSpacer = 2
 
@@ -58,8 +58,8 @@ export class Building extends Entity {
         for (let level: number = 0; level < moduleLayout.length; level++) {
             for (let row: number = 0; row < moduleLayout[level].length; row++) {
                 for (let column: number = 0; column < moduleLayout[level][row].length; column++) {
-                    moduleId = Number(moduleLayout[level][row][column])
-                    if (moduleId > 0) {
+                    moduleId = String(moduleLayout[level][row][column])
+                    if (moduleId.length > 0) {
                         this._moduleCount++
                         let position: Vector3 = new Vector3(
                             column * moduleDimension.x + column * openingDimension.x,
@@ -72,16 +72,13 @@ export class Building extends Entity {
                             ' of [' + moduleLayout[level][row] + ']' +
                             ' at position ' + position
                         )
-                        let module: Module = new Module()
-                        module.addComponent(new Transform({position: position}))
-                        module.setParent(this)
 
-                        // if (moduleId >= 1) {
-                        //     let connector: Connector = new Connector(connectorDimension, defaultWithCollisions)
-                        //     let connectorPosition: Vector3 = (new Vector3(moduleDimension.x, 0, moduleDimension.x/2 - connectorDimension.x/2 - connectorDimension.z)).add(position)
-                        //     connector.addComponent(new Transform({position: connectorPosition}))
-                        //     connector.setParent(this)
-                        // }
+                        if (moduleId.length > 0) {
+                            let module: Module = new Module(moduleId, moduleDimension, openingDimension, connectorDimension)
+                            module.addComponent(new Transform({position: position}))
+                            module.setParent(this)
+                        }
+
                     }
                 }
             }
@@ -116,13 +113,16 @@ export class Module extends Entity {
     private _DEFAULT_DIMENSION: Vector3 = defaultModuleDimension
     private _DEFAULT_OPENING_DIMENSION: Vector3 = defaultModuleOpeningDimension
 
-    constructor(type?: string, moduleDimension?: Vector3, wallOpeningDimension?: Vector3) {
+    constructor(type?: string, moduleDimension?: Vector3, wallOpeningDimension?: Vector3, connectorDimension?: Vector3) {
 
         // Instantiate an Entity
         super()
 
         // Default module has four openings
-        if (!type) type = "N:opening,E:opening,W:opening,S:opening"
+        if (!type)
+            type = 'NEWS'
+        else
+            type = type.toUpperCase()
         let dimension: Vector3 = this._DEFAULT_DIMENSION
         if (moduleDimension) dimension = moduleDimension
         let openingDimension: Vector3 = this._DEFAULT_OPENING_DIMENSION
@@ -131,76 +131,93 @@ export class Module extends Entity {
         // Debug message
         if (logging) log(msgDEBUG + 'Creating module ' + type + ' (' + dimension + ') with opening (' + openingDimension + ')')
 
-        // Create walls with openings
-        let openings: string[] = type.split(',')
-        if (openings.length >= 1 && openings.length <= 4) {
+        // Create walls
+        if (type.length >= 1 && type.length <= 4) {
 
             // Initial position and rotation
             let relativePosition: Vector3 = new Vector3(0, 0, 0)
             let relativeRotation: Quaternion = Quaternion.Euler(0, 0, 0)
 
-            // Iterate through array
-            for (let opening in openings) {
-                let wallOpening: string[] = openings[opening].split(':')
+            // Build the walls
+            let thisWallOpening: Vector3 = new Vector3()
 
-                if (wallOpening[0].toUpperCase() == 'S') {
-                    let thisWallOpening: Vector3 = openingDimension
-                    if (wallOpening[1].toLowerCase() != 'opening') thisWallOpening = new Vector3(0, 0, 0)
-                    let wall: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
-                    relativePosition = new Vector3(0, 0, 0)
-                    relativeRotation = Quaternion.Euler(0, 0, 0)
-                    wall.addComponent(new Transform({
-                        position: relativePosition,
-                        rotation: relativeRotation
-                    }))
-                    wall.setParent(this)
-                    if (logging) log(msgDEBUG + 'Wall "' + wallOpening[0].toUpperCase() + '" (' + dimension + ') created with opening (' + openingDimension + ')')
-                }
-
-                if (wallOpening[0].toUpperCase() == 'W') {
-                    let thisWallOpening: Vector3 = openingDimension
-                    if (wallOpening[1].toLowerCase() != 'opening') thisWallOpening = new Vector3(0, 0, 0)
-                    let wall: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
-                    relativePosition = new Vector3(0, 0, dimension.x)
-                    relativeRotation = Quaternion.Euler(0, 90, 0)
-                    wall.addComponent(new Transform({
-                        position: relativePosition,
-                        rotation: relativeRotation
-                    }))
-                    wall.setParent(this)
-                    if (logging) log(msgDEBUG + 'Wall "' + wallOpening[0].toUpperCase() + '" (' + dimension + ') created with opening (' + openingDimension + ')')
-                }
-
-                if (wallOpening[0].toUpperCase() == 'E') {
-                    let thisWallOpening: Vector3 = openingDimension
-                    if (wallOpening[1].toLowerCase() != 'opening') thisWallOpening = new Vector3(0, 0, 0)
-                    let wall: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
-                    relativePosition = new Vector3(dimension.x, 0, 0)
-                    relativeRotation = Quaternion.Euler(0, 270, 0)
-                    wall.addComponent(new Transform({
-                        position: relativePosition,
-                        rotation: relativeRotation
-                    }))
-                    wall.setParent(this)
-
-                    if (logging) log(msgDEBUG + 'Wall "' + wallOpening[0].toUpperCase() + '" (' + dimension + ') created with opening (' + openingDimension + ')')
-                }
-
-                if (wallOpening[0].toUpperCase() == 'N') {
-                    let thisWallOpening: Vector3 = openingDimension
-                    if (wallOpening[1].toLowerCase() != 'opening') thisWallOpening = new Vector3(0, 0, 0)
-                    let wall: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
-                    relativePosition = new Vector3(dimension.x, 0, dimension.x)
-                    relativeRotation = Quaternion.Euler(0, 180, 0)
-                    wall.addComponent(new Transform({
-                        position: relativePosition,
-                        rotation: relativeRotation
-                    }))
-                    wall.setParent(this)
-                    if (logging) log(msgDEBUG + 'Wall "' + wallOpening[0].toUpperCase() + '" (' + dimension + ') created with opening (' + openingDimension + ')')
-                }
-
+            thisWallOpening = new Vector3(0,0,0)
+            if (type.indexOf('S')>=0) {
+                thisWallOpening = openingDimension
+                let connector_S: Connector = new Connector(connectorDimension, defaultWithCollisions)
+                let connectorPosition_S: Vector3 = (new Vector3(moduleDimension.x/2 - connectorDimension.x/2 - connectorDimension.z, 0, 0))
+                connector_S.addComponent(new Transform({
+                    position: connectorPosition_S,
+                    rotation: Quaternion.Euler(0, 90, 0)
+                }))
+                connector_S.setParent(this)
             }
+            let wall_S: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            relativePosition = new Vector3(0, 0, 0)
+            relativeRotation = Quaternion.Euler(0, 0, 0)
+            wall_S.addComponent(new Transform({
+                position: relativePosition,
+                rotation: relativeRotation
+            }))
+            wall_S.setParent(this)
+            if (logging) log(msgDEBUG + 'Wall South (' + dimension + ') created with opening (' + openingDimension + ')')
+
+            thisWallOpening = new Vector3(0,0,0)
+            if (type.indexOf('W')>=0) {
+                thisWallOpening = openingDimension
+                let connector_W: Connector = new Connector(connectorDimension, defaultWithCollisions)
+                let connectorPosition_W: Vector3 = (new Vector3(0 - connectorDimension.x, 0, moduleDimension.x/2 - connectorDimension.x/2 - connectorDimension.z))
+                connector_W.addComponent(new Transform({position: connectorPosition_W}))
+                connector_W.setParent(this)
+            }
+            let wall_W: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            relativePosition = new Vector3(0, 0, dimension.x)
+            relativeRotation = Quaternion.Euler(0, 90, 0)
+            wall_W.addComponent(new Transform({
+                position: relativePosition,
+                rotation: relativeRotation
+            }))
+            wall_W.setParent(this)
+            if (logging) log(msgDEBUG + 'Wall West (' + dimension + ') created with opening (' + openingDimension + ')')
+
+            thisWallOpening = new Vector3(0,0,0)
+            if (type.indexOf('E')>=0) {
+                thisWallOpening = openingDimension
+                let connector_E: Connector = new Connector(connectorDimension, defaultWithCollisions)
+                let connectorPosition_E: Vector3 = (new Vector3(moduleDimension.x, 0, moduleDimension.x/2 - connectorDimension.x/2 - connectorDimension.z))
+                connector_E.addComponent(new Transform({position: connectorPosition_E}))
+                connector_E.setParent(this)
+            }
+            let wall_E: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            relativePosition = new Vector3(dimension.x, 0, 0)
+            relativeRotation = Quaternion.Euler(0, 270, 0)
+            wall_E.addComponent(new Transform({
+                position: relativePosition,
+                rotation: relativeRotation
+            }))
+            wall_E.setParent(this)
+            if (logging) log(msgDEBUG + 'Wall East (' + dimension + ') created with opening (' + openingDimension + ')')
+
+            thisWallOpening = new Vector3(0,0,0)
+            if (type.indexOf('N')>=0) {
+                thisWallOpening = openingDimension
+                let connector_N: Connector = new Connector(connectorDimension, defaultWithCollisions)
+                let connectorPosition_N: Vector3 = (new Vector3(moduleDimension.x/2 - connectorDimension.x/2 - connectorDimension.z, 0, moduleDimension.x + connectorDimension.x))
+                connector_N.addComponent(new Transform({
+                    position: connectorPosition_N,
+                    rotation: Quaternion.Euler(0, 90, 0)
+                }))
+                connector_N.setParent(this)
+            }
+            let wall_N: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            relativePosition = new Vector3(dimension.x, 0, dimension.x)
+            relativeRotation = Quaternion.Euler(0, 180, 0)
+            wall_N.addComponent(new Transform({
+                position: relativePosition,
+                rotation: relativeRotation
+            }))
+            wall_N.setParent(this)
+            if (logging) log(msgDEBUG + 'Wall North (' + dimension + ') created with opening (' + openingDimension + ')')
 
             let floor: Floor = new Floor(new Vector3(dimension.x, dimension.z, dimension.x))
             floor.addComponent(new Transform({
@@ -339,15 +356,15 @@ export class Connector extends Entity {
         }))
         wall_S.setParent(this)
 
-        let floor: Floor = new Floor(new Vector3(dimension.x, dimension.z, dimension.x), withCollisions)
+        let floor: Floor = new Floor(new Vector3((dimension.x + 4 * dimension.z), dimension.z, (dimension.x + 2 * dimension.z)), withCollisions)
         floor.addComponent(new Transform({
-            position: new Vector3(dimension.x/2, 0, dimension.x/2)
+            position: new Vector3((dimension.x)/2, 0, (dimension.x + 2 * dimension.z)/2)
         }))
         floor.setParent(this)
 
         let wall_N: Wall = new Wall(dimension, new Vector3(0,0,0), withCollisions)
         wall_N.addComponent(new Transform({
-            position: new Vector3(dimension.x, 0, dimension.x),
+            position: new Vector3((dimension.x), 0, (dimension.x + 2 * dimension.z)),
             rotation: Quaternion.Euler(0, 180, 0)
         }))
         wall_N.setParent(this)
