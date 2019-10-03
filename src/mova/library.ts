@@ -356,7 +356,7 @@ export class Connector extends Entity {
         }))
         wall_S.setParent(this)
 
-        let floor: Floor = new Floor(new Vector3((dimension.x + 4 * dimension.z), dimension.z, (dimension.x + 2 * dimension.z)), withCollisions)
+        let floor: Floor = new Floor(new Vector3((dimension.x), dimension.z, (dimension.x + 2 * dimension.z)), withCollisions)
         floor.addComponent(new Transform({
             position: new Vector3((dimension.x)/2, 0, (dimension.x + 2 * dimension.z)/2)
         }))
