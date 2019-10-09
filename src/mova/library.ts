@@ -14,6 +14,9 @@ let msgDEBUG: string = "MoVA - DEBUG: "
 const defaultWithCollisions: boolean = false
 const defaultModuleDimension: Vector3 = new Vector3(24, 8, 0.1)
 const defaultModuleOpeningDimension: Vector3 = new Vector3(4,4,0.1)
+const defaultInnerWallOffset: number = 0.04
+const defaultInnerCeilingOffset: number = 0.1
+const defaultInnerFloorOffset: number = 0.1
 
 const defaultExteriorWallMaterial = new Material()
 defaultExteriorWallMaterial.albedoColor = Color3.Black()
@@ -219,7 +222,7 @@ export class Module extends Entity {
             wall_N.setParent(this)
             if (logging) log(msgDEBUG + 'Wall North (' + dimension + ') created with opening (' + openingDimension + ')')
 
-            let floor: Floor = new Floor(new Vector3(dimension.x, dimension.z, dimension.x))
+            let floor: Floor = new Floor(new Vector3(dimension.x, dimension.z, dimension.x), 0.005)
             floor.addComponent(new Transform({
                 position: new Vector3(dimension.x / 2, 0, dimension.x / 2)
             }))
@@ -267,8 +270,8 @@ export class Wall extends Entity {
             innerSegment_1.addComponent(defaultInnerWallMaterial)
             innerSegment_1.addComponent(wallShape)
             innerSegment_1.addComponent(new Transform({
-                position: new Vector3((dimension.x/2 - opening.x/2)/2, dimension.y/2, dimension.z + 0.01),
-                scale: new Vector3(dimension.x/2 - opening.x/2  - (2 * dimension.z), dimension.y  - (2 * dimension.z), .01),
+                position: new Vector3((dimension.x/2 - opening.x/2)/2, dimension.y/2, dimension.z + defaultInnerWallOffset),
+                scale: new Vector3(dimension.x/2 - opening.x/2  - (2 * dimension.z), dimension.y  - (2 * dimension.z), dimension.z),
                 rotation: Quaternion.Euler(0,0, 0)
             }))
             let wallSegment_2 = new Entity()
@@ -285,8 +288,8 @@ export class Wall extends Entity {
             innerSegment_2.addComponent(defaultInnerWallMaterial)
             innerSegment_2.addComponent(wallShape)
             innerSegment_2.addComponent(new Transform({
-                position: new Vector3(dimension.x/2, dimension.y/2 + opening.x/2, dimension.z + 0.01),
-                scale: new Vector3(opening.x + (2 * dimension.z), dimension.y - opening.y - (2 * dimension.z), .01),
+                position: new Vector3(dimension.x/2, dimension.y/2 + opening.x/2, dimension.z + defaultInnerWallOffset),
+                scale: new Vector3(opening.x + (2 * dimension.z), dimension.y - opening.y - (2 * dimension.z), dimension.z),
                 rotation: Quaternion.Euler(0,0, 0)
             }))
             let wallSegment_3 = new Entity()
@@ -303,8 +306,8 @@ export class Wall extends Entity {
             innerSegment_3.addComponent(defaultInnerWallMaterial)
             innerSegment_3.addComponent(wallShape)
             innerSegment_3.addComponent(new Transform({
-                position: new Vector3((dimension.x/2 - opening.x/2) + opening.x + (dimension.x/2 - opening.x/2)/2, dimension.y/2, dimension.z + .01),
-                scale: new Vector3(dimension.x/2 - opening.x/2 - (2 * dimension.z), dimension.y - (2 * dimension.z), .01),
+                position: new Vector3((dimension.x/2 - opening.x/2) + opening.x + (dimension.x/2 - opening.x/2)/2, dimension.y/2, dimension.z + defaultInnerWallOffset),
+                scale: new Vector3(dimension.x/2 - opening.x/2 - (2 * dimension.z), dimension.y - (2 * dimension.z), dimension.z),
                 rotation: Quaternion.Euler(0,0, 0)
             }))
 
@@ -325,8 +328,8 @@ export class Wall extends Entity {
             innerSegment_1.addComponent(defaultInnerWallMaterial)
             innerSegment_1.addComponent(wallShape)
             innerSegment_1.addComponent(new Transform({
-                position: new Vector3(dimension.x/2, dimension.y/2, dimension.z + 0.01),
-                scale: new Vector3(dimension.x - (2 * dimension.z), dimension.y - (2 * dimension.z), .01),
+                position: new Vector3(dimension.x/2, dimension.y/2, dimension.z + defaultInnerWallOffset),
+                scale: new Vector3(dimension.x - (2 * dimension.z), dimension.y - (2 * dimension.z), defaultInnerWallOffset),
                 rotation: Quaternion.Euler(0,0, 0)
             }))
         }
@@ -356,7 +359,7 @@ export class Connector extends Entity {
         }))
         wall_S.setParent(this)
 
-        let floor: Floor = new Floor(new Vector3((dimension.x), dimension.z, (dimension.x + 2 * dimension.z)), withCollisions)
+        let floor: Floor = new Floor(new Vector3((dimension.x), dimension.z, (dimension.x + 2 * dimension.z)), 0, withCollisions)
         floor.addComponent(new Transform({
             position: new Vector3((dimension.x)/2, 0, (dimension.x + 2 * dimension.z)/2)
         }))
@@ -380,7 +383,7 @@ export class Connector extends Entity {
 //
 export class Floor extends Entity {
 
-    constructor(dimension: Vector3, withCollision: boolean = true) {
+    constructor(dimension: Vector3, offSetCorrectionFactor: number = 0, withCollision: boolean = true) {
 
         // Instantiate an Entity
         super()
@@ -391,7 +394,6 @@ export class Floor extends Entity {
 
         // Exterior
         let floorSegment_1 = new Entity()
-        floorSegment_1.setParent(this)
         floorSegment_1.addComponent(floorShape)
         floorSegment_1.addComponent(defaultExteriorWallMaterial)
         floorSegment_1.addComponent(new Transform({
@@ -402,12 +404,11 @@ export class Floor extends Entity {
 
         // Interior
         let innerFloorSegment_1 = new Entity()
-        innerFloorSegment_1.setParent(this)
         innerFloorSegment_1.addComponent(floorShape)
         innerFloorSegment_1.addComponent(defaultFloorMaterial)
         innerFloorSegment_1.addComponent(new Transform({
-            position: new Vector3(0, dimension.y + .01, 0),
-            scale: new Vector3(dimension.x - (2 * dimension.y), .01, dimension.z - (2 * dimension.y)),
+            position: new Vector3(0, dimension.y + defaultInnerFloorOffset, 0),
+            scale: new Vector3(dimension.x - offSetCorrectionFactor, defaultInnerFloorOffset, dimension.x - offSetCorrectionFactor),
             rotation: Quaternion.Euler(0, 0, 0)
         }))
         innerFloorSegment_1.setParent(this)
@@ -448,7 +449,7 @@ export class Ceiling extends Entity {
         innerCeilingSegment_1.addComponent(defaultInnerWallMaterial)
         innerCeilingSegment_1.addComponent(new Transform({
             position: new Vector3(0, -0.1, 0),
-            scale: new Vector3(dimension.x - (2 * dimension.y), .01, dimension.z - (2 * dimension.y)),
+            scale: new Vector3(dimension.x - (2 * dimension.y), defaultInnerCeilingOffset, dimension.z - (2 * dimension.y)),
             rotation: Quaternion.Euler(0, 0, 0)
         }))
         innerCeilingSegment_1.setParent(this)
