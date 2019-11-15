@@ -3,6 +3,8 @@
 //                             Museum of Virtual Arts (MoVA), Aetheria, Decentraland
 //                                               "The Stack"
 //
+//                                CryptoVrontier https://github.com/vrontier/MoVA
+//
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Master control switch for logging
@@ -456,3 +458,4 @@ export class Ceiling extends Entity {
 
     }
 }
+
