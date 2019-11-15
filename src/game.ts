@@ -30,12 +30,12 @@ let floatingHeight: number = 6 // meters
 moduleDimension = new Vector3(12, 6, 0.1)
 openingDimension = new Vector3(4, 4, 0.1)
 connectorDimension = new Vector3(0, 0, 0)
-position = new Vector3(2, floatingHeight,4)
+position = new Vector3(4, floatingHeight,2)
 rotation = Quaternion.Euler(0,0,0)
 scale = new Vector3(1,1,1)
 layout = [
     [
-        ['S']
+        ['W']
     ]
 ]
 let MoVASimple: Building = new Building(layout, moduleDimension, openingDimension, connectorDimension)
@@ -46,7 +46,7 @@ engine.addEntity(MoVASimple)
 //
 //  Create the elevator
 
-let elevator: Elevator = new Elevator(floatingHeight, new Vector3(8, 0, 2), new Vector3(4,0.1, 4))
+let elevator: Elevator = new Elevator(floatingHeight, new Vector3(2, 0, 8), new Vector3(4,0.1, 4))
 engine.addEntity(elevator)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ engine.addEntity(elevator)
 moduleDimension = new Vector3(24, 8, 0.1)
 openingDimension = new Vector3(4, 4, 0.1)
 connectorDimension = new Vector3(4, 1, 0.1)
-position = new Vector3(6, floatingHeight + 0.8,8)
+position = new Vector3(8, floatingHeight + 0.8,6)
 rotation = Quaternion.Euler(0,0,0)
 scale = new Vector3(0.05,0.05,0.05)
 layout = [
@@ -112,7 +112,7 @@ engine.addEntity(tree02)
 let tree03: Entity = new Entity()
 tree03.addComponent(new GLTFShape("models/TreeSycamore_03/TreeSycamore_03.glb"))
 tree03.addComponent(new Transform({
-    position: new Vector3(3, 0, 10),
+    position: new Vector3(3, 0, 12),
     scale: new Vector3(1, 1, 1),
     rotation: Quaternion.Euler(0,0.7, 0)
 }))
@@ -121,7 +121,7 @@ engine.addEntity(tree03)
 let tree04: Entity = new Entity()
 tree04.addComponent(new GLTFShape("models/TreeSycamore_03/TreeSycamore_03.glb"))
 tree04.addComponent(new Transform({
-    position: new Vector3(2, 0, 4),
+    position: new Vector3(7, 0, 4),
     scale: new Vector3(1, 1, 1),
     rotation: Quaternion.Euler(0,0.1, 0)
 }))
@@ -130,7 +130,7 @@ engine.addEntity(tree04)
 let tree05: Entity = new Entity()
 tree05.addComponent(new GLTFShape("models/TreeSycamore_02/TreeSycamore_02.glb"))
 tree05.addComponent(new Transform({
-    position: new Vector3(3, 0, 13),
+    position: new Vector3(12, 0, 13),
     scale: new Vector3(1, 1, 1),
     rotation: Quaternion.Euler(0,0.66, 0)
 }))

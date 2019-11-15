@@ -176,7 +176,7 @@ export class Elevator extends Entity {
         elevatorUpControl.setParent(this)
 
         // Toggle for elevatorUpControl
-        elevatorUpControl.addComponent(new utils.ToggleComponent(utils.ToggleState.Off, value =>{
+        elevatorUpControl.addComponentOrReplace(new utils.ToggleComponent(utils.ToggleState.Off, value =>{
             if (value == utils.ToggleState.On){
                 // Hide control
                 engine.removeEntity(elevatorUpControl)
@@ -226,7 +226,7 @@ export class Elevator extends Entity {
         elevatorDownControl.setParent(this)
 
         // Toggle for elevatorDownControl
-        elevatorDownControl.addComponent(new utils.ToggleComponent(utils.ToggleState.Off, value =>{
+        elevatorDownControl.addComponentOrReplace(new utils.ToggleComponent(utils.ToggleState.Off, value =>{
             if (value == utils.ToggleState.On){
                 // Hide control
                 engine.removeEntity(elevatorUpControl)
