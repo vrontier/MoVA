@@ -76,7 +76,7 @@ You can create a (very) simple elevator capable of transporting passengers betwe
 
 ```typescript
 // Import the elevator library
-import {Elevator} from "./mova/elevator" import {Vector3} from "decentraland-ecs"
+import {Elevator} from "./mova/elevator"
 
 // Elevator level 1 height of 6m 
 let elevatorHeight: number = 6
