@@ -10,10 +10,53 @@ so feel free to copy and re-use!
 MoVA will be placed in Aetheria, Decentraland (coordinates will be published here). 
 
 ## Structural components
-The building consists of modules being linked with each via bridges forming a module level. Levels can be stacked on top 
+The building consists of square modules being linked with each via bridges forming a module level. Levels can be stacked on top 
 of each other to from a larger structure (got inspired by the "The Stacks" in Ready Player One). The modules are all of 
 the same size which can be configured by the builder. 
 
 In order to access the different levels of the building, an elevator has been implemented. 
 
+## Sample creation of a building 
+In order to create a 3 x 3 x 3 structure of 6m (length and width) and 4m (height) modules with 10cm 
+thick walls you will need the following code:
 
+Module (6m length, 6m width, 4m height and 10cm thick walls)
+`let moduleDimension: Vector3 = new Vector3(6, 4, 0.1)`
+
+Opening passage of a module (4m height, 4m width and 10cm thick)
+`let openingDimension: Vector3 = new Vector3(4, 4, 0.1)`
+
+Bridge connector between modules (4m width, 4m length and 10cm thick)
+`let connectorDimension: Vector3 = new Vector3(4, 4, 0.1)`
+
+Position of the building (x, y, z coordinate)
+`let position: Vector3 = new Vector3(4, floatingHeight,2)`
+
+Rotation of the building (x, y, z using the Euler method)
+`let rotation: Vector3 = Quaternion.Euler(0,0,0)`
+
+Scale of the building (0-100% x, 0-100% y, 0-100%z)
+`let scale: Vector3 = new Vector3(1,1,1)`
+
+Layout of the building (3 levels a 3 x 3 modules with openings to all sides: North, East, South and West)
+`layout = [
+    [
+        ['NESW'], ['NESW'], ['NESW'],
+        ['NESW'], ['NESW'], ['NESW'],
+        ['NESW'], ['NESW'], ['NESW'] 
+    ],
+    [
+        ['NESW'], ['NESW'], ['NESW'],
+        ['NESW'], ['NESW'], ['NESW'],
+        ['NESW'], ['NESW'], ['NESW'] 
+    ],
+    [
+        ['NESW'], ['NESW'], ['NESW'],
+        ['NESW'], ['NESW'], ['NESW'],
+        ['NESW'], ['NESW'], ['NESW'] 
+    ]
+]`
+
+let MoVASimple: Building = new Building(layout, moduleDimension, openingDimension, connectorDimension)
+MoVASimple.addComponent(new Transform({position: position, rotation: rotation, scale: scale}))
+engine.addEntity(MoVASimple)`
