@@ -75,7 +75,7 @@ engine.addEntity(MoVASimple)
 You can create a (very) simple elevator capable of transporting passengers between two levels with the following code:
 
 ```typescript
-// Import the building library
+// Import the elevator library
 import {Elevator} from "./mova/elevator" import {Vector3} from "decentraland-ecs"
 
 // Elevator level 1 height of 6m 
