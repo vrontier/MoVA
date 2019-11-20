@@ -10,9 +10,9 @@ so feel free to copy and re-use!
 MoVA will be placed in Aetheria, Decentraland (coordinates will be published here). 
 
 ## Structural components
-The building consists of square modules being linked with each via bridges forming a module level. Levels can be stacked on top 
-of each other to from a larger structure (got inspired by the "The Stacks" in Ready Player One). The modules are all of 
-the same size which can be configured by the builder. 
+The building consists of square modules being linked with each via connectors forming a module level. Levels can be 
+stacked on top of each other to from a larger structure (got inspired by the "The Stacks" in Ready Player One). 
+The modules are all of the same size which can be configured by the builder. 
 
 In order to access the different levels of the building, an elevator has been implemented. 
 
@@ -21,6 +21,9 @@ In order to create a 3 x 3 x 3 structure of 6m (length and width) and 4m (height
 thick walls you will need the following code:
 
 ```typescript
+// Import the building library
+import {Building} from "./mova/library"
+
 // Module (6m length, 6m width, 4m height and 10cm thick walls)
 let moduleDimension: Vector3 = new Vector3(6, 4, 0.1)
 
@@ -60,8 +63,33 @@ layout = [
 
 // Create the building entity
 let MoVASimple: Building = new Building(layout, moduleDimension, openingDimension, connectorDimension)
+
 // Position, rotate and scale it
 MoVASimple.addComponent(new Transform({position: position, rotation: rotation, scale: scale}))
+
 // Add building entity to engine
 engine.addEntity(MoVASimple)
+```
+
+## Sample creation of an elevator
+You can create a (very) simple elevator capable of transporting passengers between two levels with the following code:
+
+```typescript
+// Import the building library
+import {Elevator} from "./mova/elevator" import {Vector3} from "decentraland-ecs"
+
+// Elevator level 1 height of 6m 
+let elevatorHeight: number = 6
+
+// Elevator position (x, y, z) with y being level 0 height at ground floor (0m)
+let elevatorPosition: Vector3 = new Vector3(2, 0, 8)
+
+// Elevator dimension (width, platform thickness, length)
+let elevatorDimension: Vector3 = new Vector3(4, 0.1, 4)
+
+// Create elevator entity
+let elevator: Elevator = new Elevator(elevatorHeight, elevatorPosition, elevatorDimension)
+
+// Add entity to engine
+engine.addEntity(elevator)
 ```
