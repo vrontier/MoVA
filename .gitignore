@@ -2,13 +2,13 @@
 /bin
 /node_modules
 !/audio/*
-!/src/dcl-landscapes.ts
-!/src/dcl-landscapes/*
+/src/dcl-landscapes.ts
+/src/dcl-landscapes/*
 .dclignore
 Dockerfile
 LICENSE
 package.json
 package-lock.json
 README.md
-!scene.json
+scene.json
 tsconfig.json
