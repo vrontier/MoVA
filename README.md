@@ -16,6 +16,13 @@ The modules are all of the same size which can be configured by the builder.
 
 In order to access the different levels of the building, an elevator has been implemented. 
 
+## Prerequisites
+The code requires to have decentraland utils installed. To do so, you need to run the following command in your source code folder:
+ˋˋˋtypescript
+npm install decentraland-ecs-utils
+ˋˋˋ
+
+
 ## Sample creation of a building 
 In order to create a 3 x 3 x 3 structure of 6m (length and width) and 4m (height) modules with 10cm 
 thick walls you will need the following code:
