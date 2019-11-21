@@ -18,17 +18,16 @@ In order to access the different levels of the building, an elevator has been im
 
 ## Prerequisites
 The code requires to have decentraland utils installed. To do so, you need to run the following command in your source code folder:
-ˋˋˋtypescript
+ˋˋˋ
 npm install decentraland-ecs-utils
 ˋˋˋ
-
 
 ## Sample creation of a building 
 In order to create a 3 x 3 x 3 structure of 6m (length and width) and 4m (height) modules with 10cm 
 thick walls you will need the following code:
 
 ```typescript
-// Import the building library
+// Importnpm install decentraland-ecs-utils the building library
 import {Building} from "./mova/library"
 
 // Module (6m length, 6m width, 4m height and 10cm thick walls)
