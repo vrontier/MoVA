@@ -21,6 +21,7 @@ The code requires to have decentraland utils installed. To do so, you need to ru
 ˋˋˋ
 npm install decentraland-ecs-utils
 ˋˋˋ
+See https://github.com/decentraland/decentraland-ecs-utils for further infos.
 
 ## Sample creation of a building 
 In order to create a 3 x 3 x 3 structure of 6m (length and width) and 4m (height) modules with 10cm 
