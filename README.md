@@ -17,7 +17,7 @@ The modules are all of the same size which can be configured by the builder.
 In order to access the different levels of the building, an elevator has been implemented. 
 
 ## Prerequisites
-The code requires to have decentraland utils installed. To do so, you need to run the following command in your source code folder:
+The code requires to have Decentraland utils installed. To do so, you need to run the following command in your source code folder:
 ```typescript
 npm install decentraland-ecs-utils
 ```
