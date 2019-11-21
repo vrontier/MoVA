@@ -18,10 +18,10 @@ In order to access the different levels of the building, an elevator has been im
 
 ## Prerequisites
 The code requires to have decentraland utils installed. To do so, you need to run the following command in your source code folder:
-ˋˋˋ
+```typescript
 npm install decentraland-ecs-utils
-ˋˋˋ
-See https://github.com/decentraland/decentraland-ecs-utils for further infos.
+```
+See their repository https://github.com/decentraland/decentraland-ecs-utils for further infos.
 
 ## Sample creation of a building 
 In order to create a 3 x 3 x 3 structure of 6m (length and width) and 4m (height) modules with 10cm 
