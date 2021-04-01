@@ -24,19 +24,16 @@ const defaultExteriorWallMaterial = new Material()
 defaultExteriorWallMaterial.albedoColor = Color3.Black()
 defaultExteriorWallMaterial.metallic = 0.2
 defaultExteriorWallMaterial.roughness = 0.2
-defaultExteriorWallMaterial.disableLighting = false
 
 const defaultInnerWallMaterial = new Material()
 defaultInnerWallMaterial.albedoColor = Color3.White()
 defaultInnerWallMaterial.metallic = 0.3
 defaultInnerWallMaterial.roughness = 0.2
-defaultInnerWallMaterial.disableLighting = false
 
 const defaultFloorMaterial = new Material()
 defaultFloorMaterial.albedoColor = new Color3(.6,.6,.6)
 defaultFloorMaterial.metallic = 0.5
 defaultFloorMaterial.roughness = 0.2
-defaultFloorMaterial.disableLighting = false
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -118,7 +115,7 @@ export class Module extends Entity {
     private _DEFAULT_DIMENSION: Vector3 = defaultModuleDimension
     private _DEFAULT_OPENING_DIMENSION: Vector3 = defaultModuleOpeningDimension
 
-    constructor(type?: string, moduleDimension?: Vector3, wallOpeningDimension?: Vector3, connectorDimension?: Vector3) {
+    constructor(type?: string, dimension?: Vector3, wallOpeningDimension?: Vector3, moduleConnectorDimension?: Vector3) {
 
         // Instantiate an Entity
         super()
@@ -128,13 +125,15 @@ export class Module extends Entity {
             type = 'NEWS'
         else
             type = type.toUpperCase()
-        let dimension: Vector3 = this._DEFAULT_DIMENSION
-        if (moduleDimension) dimension = moduleDimension
+        let  moduleDimension: Vector3 = this._DEFAULT_DIMENSION
+        if (dimension)  moduleDimension = dimension
         let openingDimension: Vector3 = this._DEFAULT_OPENING_DIMENSION
         if (wallOpeningDimension) openingDimension = wallOpeningDimension
+        let connectorDimension: Vector3 = new Vector3(0, 0, 0)
+        if (moduleConnectorDimension) connectorDimension = moduleConnectorDimension
 
         // Debug message
-        if (logging) log(msgDEBUG + 'Creating module ' + type + ' (' + dimension + ') with opening (' + openingDimension + ')')
+        if (logging) log(msgDEBUG + 'Creating module ' + type + ' (' + moduleDimension + ') with opening (' + openingDimension + ')')
 
         // Create walls
         if (type.length >= 1 && type.length <= 4) {
@@ -157,7 +156,7 @@ export class Module extends Entity {
                 }))
                 connector_S.setParent(this)
             }
-            let wall_S: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            let wall_S: Wall = new Wall(moduleDimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
             relativePosition = new Vector3(0, 0, 0)
             relativeRotation = Quaternion.Euler(0, 0, 0)
             wall_S.addComponent(new Transform({
@@ -175,8 +174,8 @@ export class Module extends Entity {
                 connector_W.addComponent(new Transform({position: connectorPosition_W}))
                 connector_W.setParent(this)
             }
-            let wall_W: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
-            relativePosition = new Vector3(0, 0, dimension.x)
+            let wall_W: Wall = new Wall(moduleDimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            relativePosition = new Vector3(0, 0, moduleDimension.x)
             relativeRotation = Quaternion.Euler(0, 90, 0)
             wall_W.addComponent(new Transform({
                 position: relativePosition,
@@ -193,8 +192,8 @@ export class Module extends Entity {
                 connector_E.addComponent(new Transform({position: connectorPosition_E}))
                 connector_E.setParent(this)
             }
-            let wall_E: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
-            relativePosition = new Vector3(dimension.x, 0, 0)
+            let wall_E: Wall = new Wall(moduleDimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            relativePosition = new Vector3(moduleDimension.x, 0, 0)
             relativeRotation = Quaternion.Euler(0, 270, 0)
             wall_E.addComponent(new Transform({
                 position: relativePosition,
@@ -214,8 +213,8 @@ export class Module extends Entity {
                 }))
                 connector_N.setParent(this)
             }
-            let wall_N: Wall = new Wall(dimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
-            relativePosition = new Vector3(dimension.x, 0, dimension.x)
+            let wall_N: Wall = new Wall(moduleDimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            relativePosition = new Vector3(moduleDimension.x, 0, moduleDimension.x)
             relativeRotation = Quaternion.Euler(0, 180, 0)
             wall_N.addComponent(new Transform({
                 position: relativePosition,
@@ -224,15 +223,15 @@ export class Module extends Entity {
             wall_N.setParent(this)
             if (logging) log(msgDEBUG + 'Wall North (' + dimension + ') created with opening (' + openingDimension + ')')
 
-            let floor: Floor = new Floor(new Vector3(dimension.x, dimension.z, dimension.x), 0.005)
+            let floor: Floor = new Floor(new Vector3(moduleDimension.x, moduleDimension.z, moduleDimension.x), 0.005)
             floor.addComponent(new Transform({
-                position: new Vector3(dimension.x / 2, 0, dimension.x / 2)
+                position: new Vector3(moduleDimension.x / 2, 0, moduleDimension.x / 2)
             }))
             floor.setParent(this)
 
-            let ceiling: Ceiling = new Ceiling(new Vector3(dimension.x, dimension.z, dimension.x))
+            let ceiling: Ceiling = new Ceiling(new Vector3(moduleDimension.x, moduleDimension.z, moduleDimension.x))
             ceiling.addComponent(new Transform({
-                position: new Vector3(dimension.x / 2, dimension.y, dimension.x / 2)
+                position: new Vector3(moduleDimension.x / 2, moduleDimension.y, moduleDimension.x / 2)
             }))
             ceiling.setParent(this)
 

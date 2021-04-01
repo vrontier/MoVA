@@ -7,8 +7,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import utils from "../../node_modules/decentraland-ecs-utils/index"
-import {ToggleState} from "../../node_modules/decentraland-ecs-utils/toggle/toggleComponent"
+
+import * as utils from '@dcl/ecs-scene-utils'
+//import utils from "../../node_modules/decentraland-ecs-utils/index"
+//import {ToggleState} from "../../node_modules/decentraland-ecs-utils/toggle/toggleComponent"
 
 // Master control switch for logging
 let logging: boolean = true
@@ -17,7 +19,7 @@ let msgWARNING: string = "MoVA - WARNING: "
 let msgDEBUG: string = "MoVA - DEBUG: "
 
 export class Elevator extends Entity {
-    constructor(upperLevel: number, elevatorPosition?: Vector3, elevatorDimension?: Vector3) {
+    constructor(upperLevel: number, elevatorPosition: Vector3, elevatorDimension?: Vector3) {
 
         // Instantiate an Entity
         super()
@@ -36,31 +38,26 @@ export class Elevator extends Entity {
         defaultExteriorWallMaterial.albedoColor = Color3.Black()
         defaultExteriorWallMaterial.metallic = 0.2
         defaultExteriorWallMaterial.roughness = 0.2
-        defaultExteriorWallMaterial.disableLighting = false
 
         const defaultInnerWallMaterial = new Material()
         defaultInnerWallMaterial.albedoColor = Color3.White()
         defaultInnerWallMaterial.metallic = 0.3
         defaultInnerWallMaterial.roughness = 0.2
-        defaultInnerWallMaterial.disableLighting = false
 
         const defaultFloorMaterial = new Material()
         defaultFloorMaterial.albedoColor = new Color3(.6, .6, .6)
         defaultFloorMaterial.metallic = 0.5
         defaultFloorMaterial.roughness = 0.2
-        defaultFloorMaterial.disableLighting = false
 
         const elevatorGlassWall: Material = new Material()
         elevatorGlassWall.albedoColor = new Color4(0, 0, 0, 0.6)
         elevatorGlassWall.metallic = 0.2
         elevatorGlassWall.roughness = 0.2
-        elevatorGlassWall.disableLighting = false
 
         const controlSwitchMaterial: Material = new Material()
         controlSwitchMaterial.albedoColor = new Color4(1, 1, 1, 0.6)
         controlSwitchMaterial.metallic = 0.2
         controlSwitchMaterial.roughness = 0.2
-        controlSwitchMaterial.disableLighting = false
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //
@@ -76,7 +73,6 @@ export class Elevator extends Entity {
             position: elevatorPosition
         }))
         if (logging) log(msgDEBUG + 'Elevator at position: ' + this.getComponent(Transform).position + ', dimension: ' + this.getComponent(Transform).scale)
-
 
         let elevatorDoors: Entity = new Entity()
         elevatorDoors.addComponent(new Transform({
@@ -203,7 +199,7 @@ export class Elevator extends Entity {
                 elevatorControlTimer.addComponentOrReplace(new utils.Delay((elevatorTravelTime + controlDisplayDelay) * 1000, () => {
                     elevatorDownControl.getComponent(GLTFShape).visible = true
                     engine.addEntity(elevatorDownControl)
-                    elevatorUpControl.getComponent(utils.ToggleComponent).set(ToggleState.Off)
+                    elevatorUpControl.getComponent(utils.ToggleComponent).set(utils.ToggleState.Off)
                 }))
             }
         }))
@@ -252,7 +248,7 @@ export class Elevator extends Entity {
                 elevatorControlTimer.setParent(this)
                 elevatorControlTimer.addComponentOrReplace(new utils.Delay((elevatorTravelTime + controlDisplayDelay) * 1000, () => {
                     engine.addEntity(elevatorUpControl)
-                    elevatorDownControl.getComponent(utils.ToggleComponent).set(ToggleState.Off)
+                    elevatorDownControl.getComponent(utils.ToggleComponent).set(utils.ToggleState.Off)
                 }))
             }
         }))
