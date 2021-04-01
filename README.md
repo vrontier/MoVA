@@ -19,7 +19,7 @@ In order to access the different levels of the building, an elevator has been im
 ## Prerequisites
 The code requires to have Decentraland utils installed. To do so, you need to run the following command in your source code folder:
 ```typescript
-npm install decentraland-ecs-utils
+npm install @dcl/ecs-scene-utils -B
 ```
 See their repository https://github.com/decentraland/decentraland-ecs-utils for further infos.
 
