@@ -13,12 +13,13 @@ let msgERROR: string = "MoVA - ERROR: "
 let msgWARNING: string = "MoVA - WARNING: "
 let msgDEBUG: string = "MoVA - DEBUG: "
 
-const defaultWithCollisions: boolean = false
+const defaultWithCollisions: boolean = true
 const defaultModuleDimension: Vector3 = new Vector3(24, 8, 0.1)
 const defaultModuleOpeningDimension: Vector3 = new Vector3(4,4,0.1)
 const defaultInnerWallOffset: number = 0.04
 const defaultInnerCeilingOffset: number = 0.1
 const defaultInnerFloorOffset: number = 0.1
+const floorDistanceToWall: number = 0.001
 
 const defaultExteriorWallMaterial = new Material()
 defaultExteriorWallMaterial.albedoColor = Color3.Black()
@@ -111,7 +112,6 @@ export class Building extends Entity {
 //
 export class Module extends Entity {
 
-    private _DEFAULT_WITH_COLLISIONS: boolean = defaultWithCollisions
     private _DEFAULT_DIMENSION: Vector3 = defaultModuleDimension
     private _DEFAULT_OPENING_DIMENSION: Vector3 = defaultModuleOpeningDimension
 
@@ -156,7 +156,7 @@ export class Module extends Entity {
                 }))
                 connector_S.setParent(this)
             }
-            let wall_S: Wall = new Wall(moduleDimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            let wall_S: Wall = new Wall(moduleDimension, thisWallOpening, defaultWithCollisions)
             relativePosition = new Vector3(0, 0, 0)
             relativeRotation = Quaternion.Euler(0, 0, 0)
             wall_S.addComponent(new Transform({
@@ -174,7 +174,7 @@ export class Module extends Entity {
                 connector_W.addComponent(new Transform({position: connectorPosition_W}))
                 connector_W.setParent(this)
             }
-            let wall_W: Wall = new Wall(moduleDimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            let wall_W: Wall = new Wall(moduleDimension, thisWallOpening, defaultWithCollisions)
             relativePosition = new Vector3(0, 0, moduleDimension.x)
             relativeRotation = Quaternion.Euler(0, 90, 0)
             wall_W.addComponent(new Transform({
@@ -192,7 +192,7 @@ export class Module extends Entity {
                 connector_E.addComponent(new Transform({position: connectorPosition_E}))
                 connector_E.setParent(this)
             }
-            let wall_E: Wall = new Wall(moduleDimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            let wall_E: Wall = new Wall(moduleDimension, thisWallOpening, defaultWithCollisions)
             relativePosition = new Vector3(moduleDimension.x, 0, 0)
             relativeRotation = Quaternion.Euler(0, 270, 0)
             wall_E.addComponent(new Transform({
@@ -213,7 +213,7 @@ export class Module extends Entity {
                 }))
                 connector_N.setParent(this)
             }
-            let wall_N: Wall = new Wall(moduleDimension, thisWallOpening, this._DEFAULT_WITH_COLLISIONS)
+            let wall_N: Wall = new Wall(moduleDimension, thisWallOpening, defaultWithCollisions)
             relativePosition = new Vector3(moduleDimension.x, 0, moduleDimension.x)
             relativeRotation = Quaternion.Euler(0, 180, 0)
             wall_N.addComponent(new Transform({
@@ -223,7 +223,7 @@ export class Module extends Entity {
             wall_N.setParent(this)
             if (logging) log(msgDEBUG + 'Wall North (' + dimension + ') created with opening (' + openingDimension + ')')
 
-            let floor: Floor = new Floor(new Vector3(moduleDimension.x, moduleDimension.z, moduleDimension.x), 0.005)
+            let floor: Floor = new Floor(new Vector3(moduleDimension.x, moduleDimension.z, moduleDimension.x), defaultWithCollisions)
             floor.addComponent(new Transform({
                 position: new Vector3(moduleDimension.x / 2, 0, moduleDimension.x / 2)
             }))
@@ -360,7 +360,7 @@ export class Connector extends Entity {
         }))
         wall_S.setParent(this)
 
-        let floor: Floor = new Floor(new Vector3((dimension.x), dimension.z, (dimension.x + 2 * dimension.z)), 0, withCollisions)
+        let floor: Floor = new Floor(new Vector3((dimension.x), dimension.z, (dimension.x + 2 * dimension.z)), withCollisions)
         floor.addComponent(new Transform({
             position: new Vector3((dimension.x)/2, 0, (dimension.x + 2 * dimension.z)/2)
         }))
@@ -384,7 +384,7 @@ export class Connector extends Entity {
 //
 export class Floor extends Entity {
 
-    constructor(dimension: Vector3, offSetCorrectionFactor: number = 0, withCollision: boolean = true) {
+    constructor(dimension: Vector3, withCollision: boolean = true) {
 
         // Instantiate an Entity
         super()
@@ -408,8 +408,8 @@ export class Floor extends Entity {
         innerFloorSegment_1.addComponent(floorShape)
         innerFloorSegment_1.addComponent(defaultFloorMaterial)
         innerFloorSegment_1.addComponent(new Transform({
-            position: new Vector3(0, dimension.y + defaultInnerFloorOffset, 0),
-            scale: new Vector3(dimension.x - offSetCorrectionFactor, defaultInnerFloorOffset, dimension.x - offSetCorrectionFactor),
+            position: new Vector3(0, dimension.y, 0),
+            scale: new Vector3(dimension.x - floorDistanceToWall, defaultInnerFloorOffset, dimension.x - floorDistanceToWall),
             rotation: Quaternion.Euler(0, 0, 0)
         }))
         innerFloorSegment_1.setParent(this)
