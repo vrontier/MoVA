@@ -7,7 +7,7 @@ artworks. Key vision of this project is to create a "Building as Code" that can 
 to the needs of its builder. I publish the building and its code as open source under the Apache License 2.0 
 so feel free to copy and re-use! 
 
-MoVA will be placed in [Aetheria](http://aetheria.io), Decentraland (coordinates will be published here). 
+MoVA will be placed in [Aetheria](http://aetheria.io), Decentraland ([jump in right here](https://play.decentraland.org/?position=104%2C146)). 
 
 ## Structural components
 The building consists of square modules being linked with each via connectors forming a module level. Levels can be 
